@@ -1,1 +1,1 @@
-This is very simple movie showcase application with valila js..
+This is very simple movie showcase application with venila javascript..
