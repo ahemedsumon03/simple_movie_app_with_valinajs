@@ -9,6 +9,49 @@ const modal = document.querySelector('.modal-overlay');
 const close_btn = document.querySelector('.close-btn');
 
 const modal_content = document.querySelector('.modal-content');
+const categoriesCheckbox = [...document.querySelectorAll('input[type="checkbox"]')];
+
+categoriesCheckbox.forEach((checkbox) => {
+    checkbox.addEventListener('change', (e) => {
+        if (checkbox.checked) {
+            e.preventDefault();
+            const checkboxValue = checkbox.value;
+            const valueSplit = checkboxValue.split(' ');
+            const convertId = valueSplit.map(item => {
+                let newItem = item.slice(0, item.length - 1);
+                return genraData[newItem];
+            })
+            console.log(convertId);
+            showAllMovies().then(data => {
+                const genrasIds = data.results?.map(item => {
+                    return item.genre_ids;
+                })
+                const genraFlatid = genrasIds.flatMap((item) => item);
+
+                const filterData = data?.results?.filter(movie => {
+                    return movie.genre_ids.includes(convertId[0]);
+                })
+                console.log(filterData);
+                showMovies.innerHTML = '';
+                filterData.forEach(movie => {
+                    const divElement = document.createElement('div');
+                    divElement.classList.add('movie');
+                    divElement.innerHTML = `
+              <img src="https://image.tmdb.org/t/p/w500/${movie?.poster_path}" alt=${movie?.title}/>
+              <h3>${movie?.title}</h3>
+              <button class="details-btn" data-movie-id=${movie.id}>More Details</button>
+            `
+                    showMovies.appendChild(divElement);
+                })
+
+            }).catch(err => {
+                console.error(err.message);
+            })
+        } else { 
+            displayMovies();
+        }
+    })
+})
 
 const showAllMovies = async () => {
     try {
